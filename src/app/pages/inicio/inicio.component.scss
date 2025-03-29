@@ -1,0 +1,132 @@
+main {
+    //   position: fixed;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: inherit;
+    background: black;
+    //   background-image: url("fondo-carta.jpg");
+    //   background-size: cover;
+    //   background-position: center;
+    //   background-repeat: no-repeat;
+  
+    .content-t1 {
+      overflow: hidden;
+      width: 100%;
+    }
+    .t1 {
+      margin: 20px 0px 0px 5px;
+      font-size: 55px;
+      white-space: nowrap;
+      box-sizing: border-box;
+      color: rgb(212, 14, 130);
+      text-shadow: 0 0 10px rgba(236, 172, 215, 0.5);
+      text-align: left;
+      padding-left: 100%;
+      animation: scrollText 10s linear infinite;
+    }
+  
+    .down {
+      width: 120px;
+      height: 120px;
+      animation: bounceDown 1.3s infinite ease-in-out;
+      margin-bottom: 8px 0px;
+    }
+    .t2 {
+      color: white;
+      font-size: 50px;
+      overflow: hidden;
+      border-right: 2px solid white;
+      white-space: nowrap;
+      width: 0;
+      color: white;
+      font-size: 50px;
+      animation: typing 3s steps(20) infinite, blink 0.7s step-end infinite;
+      color: rgb(212, 14, 130);
+      text-shadow: 0 0 10px rgba(236, 172, 215, 0.5);
+    }
+  }
+  
+  .content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 10px;
+    width: 60%;
+    height: 500px;
+    max-width: 500px;
+    //   background: rgb(61, 0, 31);
+    /* 🎨 Imagen de fondo */
+    //   background-image: url("/public/fondo-carta.jpg");
+    //   background-size: cover;
+    //   background-position: center;
+    //   background-repeat: no-repeat;
+    .carta {
+      width: 380px;
+      height: 380px;
+      cursor: pointer;
+    }
+  }
+  
+  @keyframes scrollText {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  
+  @keyframes bounceDown {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(10px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  /* Efecto de escritura */
+  @keyframes typing {
+    0% {
+      width: 0;
+    }
+    50% {
+      width: 20ch; /* Tamaño aproximado del texto */
+    }
+    100% {
+      width: 0;
+    }
+  }
+  
+  /* Cursor parpadeante */
+  @keyframes blink {
+    from,
+    to {
+      border-color: transparent;
+    }
+    50% {
+      border-color: white;
+    }
+  }
+  
+  @media screen and (max-width: 650px) {
+    .content {
+      flex-direction: column;
+      width: max-content;
+    }
+  
+    .divider {
+      height: 1px;
+      width: 100%;
+      background: var(--red-to-pink-to-purple-horizontal-gradient);
+      margin-block: 1.5rem;
+    }
+  }
+  
