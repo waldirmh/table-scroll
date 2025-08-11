@@ -1,11 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component, OnInit, AfterViewInit, OnDestroy,
+  ViewChild, ElementRef, Inject, HostListener
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { PLATFORM_ID } from '@angular/core';
 import { debounceTime } from 'rxjs/operators';
-import { Product } from '../../../interface/product';
-import { products as seed } from '../../../data/data';
 
+import { Product } from '../../../interface/product';
+import { data } from '../../../data/data';
 
 @Component({
   selector: 'app-inicio',
@@ -14,29 +18,45 @@ import { products as seed } from '../../../data/data';
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.scss']
 })
-export class InicioComponent implements OnInit {
-  allProducts: Product[] = seed;
-  products: Product[] = [...seed];
+export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Datos (INICIALIZADOS para evitar TS2564)
+  products: Product[] = [];
+  allProducts: Product[] = [];
+  visibleProducts: Product[] = [];
 
+  // Filtros
   categories: string[] = [];
   filtersForm!: FormGroup;
 
-  constructor(private fb: FormBuilder) { }
+  // UI / carga
+  isLoading = false;
 
-  ngOnInit(): void {
-    // categorías únicas ordenadas
-    this.categories = Array.from(new Set(this.allProducts.map(p => p.category))).sort();
-
+  skeletonRows = Array.from({ length: 20 });
+  constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) _platformId: Object) {
     this.filtersForm = this.fb.group({
       q: [''],
       category: [''],
-      offer: [''],         // '', 'yes', 'no'
+      offer: [''],
       minPrice: [''],
       maxPrice: ['']
     });
+  }
 
-    // filtra en vivo
-    this.filtersForm.valueChanges.pipe(debounceTime(150)).subscribe(() => this.applyFilters());
+  ngOnInit(): void {
+    this.filtersForm.valueChanges.pipe(debounceTime(400)).subscribe(() => {
+      this.applyFilters();
+    });
+    this.isLoading = true;
+
+    this.getAllProducts();
+  }
+
+
+  ngAfterViewInit(): void {
+
+  }
+
+  ngOnDestroy(): void {
   }
 
   resetFilters(): void {
@@ -51,36 +71,38 @@ export class InicioComponent implements OnInit {
 
   applyFilters(): void {
     const { q, category, offer, minPrice, maxPrice } = this.filtersForm.value;
-
     const qNorm = (q ?? '').toString().trim().toLowerCase();
     const min = minPrice !== null && minPrice !== '' ? Number(minPrice) : null;
     const max = maxPrice !== null && maxPrice !== '' ? Number(maxPrice) : null;
 
     this.products = this.allProducts.filter(p => {
-      // texto: code o name
-      const matchText =
-        !qNorm ||
-        p.code.toLowerCase().includes(qNorm) ||
-        p.name.toLowerCase().includes(qNorm);
-
-      // categoría
+      const matchText = !qNorm || p.code.toLowerCase().includes(qNorm) || p.name.toLowerCase().includes(qNorm);
       const matchCat = !category || p.category === category;
-
-      // oferta
-      const matchOffer =
-        !offer ||
-        (offer === 'yes' && p.inOffer) ||
-        (offer === 'no' && !p.inOffer);
-
-      // precio
+      const matchOffer = !offer || (offer === 'yes' && p.inOffer) || (offer === 'no' && !p.inOffer);
       const matchMin = min === null || p.price >= min;
       const matchMax = max === null || p.price <= max;
-
       return matchText && matchCat && matchOffer && matchMin && matchMax;
     });
   }
 
-  trackByCode(_i: number, item: Product): string {
-    return item.code;
+
+  private getAllProducts(): void {
+    this.isLoading = true;
+    setTimeout(() => {
+      try {
+        const seed = data as Product[];
+        this.allProducts = seed;
+        this.products = [...seed];
+        this.categories = Array.from(new Set(seed.map(p => p.category))).sort();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
+    }, 1000);
   }
+
+
+
+
 }

@@ -1,6 +1,5 @@
-import { Product } from "../interface/product";
 
-export const products: Product[] = [
+export const data:any= [
   { code: 'P001', name: 'Camiseta básica', category: 'Ropa', price: 19.99, inOffer: true },
   { code: 'P002', name: 'Pantalón jeans', category: 'Ropa', price: 39.5, inOffer: false },
   { code: 'P003', name: 'Zapatillas', category: 'Calzado', price: 59.9, inOffer: true },

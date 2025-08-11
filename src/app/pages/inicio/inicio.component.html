@@ -1,23 +1,36 @@
 <main class="main">
     <section class="tabla-wrapper">
         <h3>Productos</h3>
+
         <!-- Filtros -->
-        <form class="filters" [formGroup]="filtersForm">
-            <input type="search" placeholder="Buscar por código o nombre…" formControlName="q" autocomplete="off" />
-            <select formControlName="category">
+        <form class="filters" *ngIf="filtersForm" [formGroup]="filtersForm" role="search"
+            aria-label="Filtros de productos">
+            <div class="search-field">
+                <input type="search" placeholder="Buscar por código o nombre…" formControlName="q" autocomplete="off"
+                    aria-label="Buscar" />
+                <!-- Lupa morada -->
+                <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
+                    <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" />
+                </svg>
+            </div>
+
+            <select formControlName="category" aria-label="Categoría">
                 <option value="">Todas las categorías</option>
                 <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
             </select>
-            <select formControlName="offer">
+
+            <select formControlName="offer" aria-label="Oferta">
                 <option value="">Todas</option>
                 <option value="yes">En oferta</option>
                 <option value="no">Sin oferta</option>
             </select>
 
-            <input type="number" formControlName="minPrice" placeholder="Precio min" />
-            <input type="number" formControlName="maxPrice" placeholder="Precio max" />
+            <input type="number" formControlName="minPrice" placeholder="Precio min" aria-label="Precio mínimo" />
+            <input type="number" formControlName="maxPrice" placeholder="Precio max" aria-label="Precio máximo" />
 
-            <button type="button" class="btn-reset" (click)="resetFilters()">
+            <button type="button" class="btn-reset" (click)="resetFilters()" aria-label="Limpiar filtros">
                 Limpiar
             </button>
 
@@ -26,7 +39,6 @@
             </div>
         </form>
 
-        <!-- Tabla -->
         <table class="tabla">
             <thead>
                 <tr>
@@ -38,19 +50,41 @@
                 </tr>
             </thead>
 
-            <tbody>
-                <tr *ngFor="let p of products; trackBy: trackByCode">
-                    <td>{{ p.code }}</td>
-                    <td>{{ p.name }}</td>
-                    <td>{{ p.category }}</td>
-                    <td class="text-right">{{ p.price | currency:'PEN ':'symbol-narrow' }}</td>
-                    <td>
-                        <span class="badge" [class.badge-ok]="p.inOffer" [class.badge-no]="!p.inOffer">
-                            {{ p.inOffer ? 'Sí' : 'No' }}
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
+            <!-- Cuando está cargando -->
+            <ng-container *ngIf="isLoading; else dataTbody">
+                <tbody>
+                    <tr class="skeleton-row" *ngFor="let _ of skeletonRows">
+                        <td><span class="sk sk--sm"></span></td>
+                        <td><span class="sk sk--md"></span></td>
+                        <td><span class="sk sk--md"></span></td>
+                        <td class="text-right"><span class="sk sk--sm"></span></td>
+                        <td><span class="sk sk--pill"></span></td>
+                    </tr>
+                </tbody>
+            </ng-container>
+
+            <!-- Cuando ya hay datos -->
+            <ng-template #dataTbody>
+                <tbody>
+                    <tr *ngFor="let product of products">
+                        <td>{{ product.code }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.category }}</td>
+                        <td class="text-right">{{ product.price | currency:'PEN':'symbol-narrow' }}</td>
+                        <td>
+                            <span class="badge" [class.badge-ok]="product.inOffer" [class.badge-no]="!product.inOffer">
+                                {{ product.inOffer ? 'Sí' : 'No' }}
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- Estado vacío (opcional) -->
+                    <tr *ngIf="!isLoading && visibleProducts.length === 0">
+                        <td colspan="5" style="text-align:center; padding:14px;">Sin resultados</td>
+                    </tr>
+                </tbody>
+            </ng-template>
         </table>
+
     </section>
 </main>
