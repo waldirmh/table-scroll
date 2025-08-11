@@ -1,32 +1,36 @@
-<<<<<<< HEAD
-# my-love
-my-love waldir and edith
-=======
-# MyLove
+# Requirements
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.4.
+- NodeJS: Versión 22.x
+- Run App: ng serve -o
 
-## Development server
+## Table with skeleton loader
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+App web usando skeleton para la carga de productos
 
-## Code scaffolding
+## Name
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+App Web de gestión de productos
 
-## Build
+## Description
+La App web lista de 10 en 10 a medida que el usuario baje para la parte inferior para ves más productos.
+- Realiza búsqueda por id
+- Permite filtrar productos por categoría, precio, oferta.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
+## Installation
+- Dependencias: npm run install
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Usage
+- Angular versión 17.x
 
-## Running end-to-end tests
+## Support 
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+waldirmendozahuaman887@gmail.com
 
-## Further help
+## Author
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
->>>>>>> 8c0b051 (initial commit)
+Waldir Mendoza Huamán
+
+## Project status
+
+Terminado

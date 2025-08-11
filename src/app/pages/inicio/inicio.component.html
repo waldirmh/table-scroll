@@ -1,20 +1,59 @@
 <main class="main">
-    <div class="content-t1">
+    <section class="tabla-wrapper">
+        <h3>Productos</h3>
 
-        <h1 class="t1">Feliz cumpleaños mi Amor</h1>
-    </div>
+        <!-- Filtros -->
+        <form class="filters" [formGroup]="filtersForm">
+            <input type="search" placeholder="Buscar por código o nombre…" formControlName="q" autocomplete="off" />
 
-    <div>
-        <img src="down.png" alt="down" class="down" />
-    </div>
+            <select formControlName="category">
+                <option value="">Todas las categorías</option>
+                <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+            </select>
 
-    <div class="content">
-        <!-- Aquí puedes agregar el contenido de tu página -->
+            <select formControlName="offer">
+                <option value="">Todas</option>
+                <option value="yes">En oferta</option>
+                <option value="no">Sin oferta</option>
+            </select>
 
-        <a [routerLink]="['/carta']">
-            <img src="carta.png" alt="app" class="carta" />
-        </a>
+            <input type="number" formControlName="minPrice" placeholder="Precio min" />
+            <input type="number" formControlName="maxPrice" placeholder="Precio max" />
 
-    </div>
-    <h2 class="t2"> Mi Persona Especial</h2>
+            <button type="button" class="btn-reset" (click)="resetFilters()">
+                Limpiar
+            </button>
+
+            <div class="result-info">
+                {{ products.length }} de {{ allProducts.length }}
+            </div>
+        </form>
+
+        <!-- Tabla -->
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th class="text-right">Precio</th>
+                    <th>Oferta</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let p of products; trackBy: trackByCode">
+                    <td>{{ p.code }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.category }}</td>
+                    <td class="text-right">{{ p.price | currency:'PEN':'symbol-narrow' }}</td>
+                    <td>
+                        <span class="badge" [class.badge-ok]="p.inOffer" [class.badge-no]="!p.inOffer">
+                            {{ p.inOffer ? 'Sí' : 'No' }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 </main>
