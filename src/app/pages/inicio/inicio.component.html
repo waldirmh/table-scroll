@@ -1,6 +1,11 @@
 <main class="main">
     <section class="tabla-wrapper">
-        <h3>Productos</h3>
+        <div class="result-info">
+            <h3>Productos</h3>
+            <h3 class="info-quantity">
+                Mostrando {{ visibleProducts.length }} de {{ products.length }} (total {{ allProducts.length }})
+            </h3>
+        </div>
 
         <!-- Filtros -->
         <form class="filters" *ngIf="filtersForm" [formGroup]="filtersForm" role="search"
@@ -8,7 +13,6 @@
             <div class="search-field">
                 <input type="search" placeholder="Buscar por código o nombre…" formControlName="query"
                     autocomplete="off" aria-label="Buscar" />
-                <!-- Lupa morada -->
                 <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
                     <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2"
@@ -21,9 +25,9 @@
                 <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
             </select>
 
-            <select formControlName="offer" aria-label="Oferta">
+            <select formControlName="activated" aria-label="Activo">
                 <option value="">Todas</option>
-                <option value="yes">Ativos</option>
+                <option value="yes">Activos</option>
                 <option value="no">Inactivos</option>
             </select>
 
@@ -34,13 +38,9 @@
                 Limpiar
             </button>
 
-            <div class="result-info">
-                Productos {{ products.length }} de {{ allProducts.length }}
-            </div>
         </form>
 
-        <div class="table-scroll">
-
+        <div class="table-scroll" #tableScroll (scroll)="onTableScroll($event)">
             <table class="tabla">
                 <thead>
                     <tr>
@@ -61,9 +61,9 @@
                             <td><span class="sk sk--sm"></span></td>
                             <td><span class="sk sk--md"></span></td>
                             <td><span class="sk sk--md"></span></td>
-                            <td class="text-right"><span class="sk sk--sm"></span></td>
-                            <td class="text-right"><span class="sk sk--sm"></span></td>
-                            <td class="text-right"><span class="sk sk--sm"></span></td>
+                            <td class="text-left"><span class="sk sk--sm"></span></td>
+                            <td class="text-left"><span class="sk sk--sm"></span></td>
+                            <td class="text-left"><span class="sk sk--sm"></span></td>
                             <td><span class="sk sk--pill"></span></td>
                         </tr>
                     </tbody>
@@ -72,13 +72,13 @@
                 <!-- Cuando ya hay datos -->
                 <ng-template #dataTbody>
                     <tbody>
-                        <tr *ngFor="let product of products">
+                        <tr *ngFor="let product of visibleProducts">
                             <td>{{ product.code }}</td>
                             <td>{{ product.name }}</td>
                             <td>{{ product.category }}</td>
-                            <td class="text-left">{{ product.basePrice | currency:'S/. ':'symbol-narrow' }}</td>
-                            <td class="text-left">{{ product.finalPrice | currency:'S/. ':'symbol-narrow' }}</td>
-                            <td class="text-left">{{ product.quantity}}</td>
+                            <td class="text-left">{{ product.basePrice | currency:'PEN':'symbol' }}</td>
+                            <td class="text-left">{{ product.finalPrice | currency:'PEN':'symbol' }}</td>
+                            <td class="text-left">{{ product.quantity }}</td>
                             <td>
                                 <span class="badge" [class.badge-ok]="product.active"
                                     [class.badge-no]="!product.active">
@@ -87,14 +87,13 @@
                             </td>
                         </tr>
 
-                        <!-- Estado vacío (opcional) -->
+                        <!-- Estado vacío -->
                         <tr *ngIf="!isLoading && products.length === 0">
-                            <td colspan="5" style="text-align:center; padding:14px;">Sin resultados</td>
+                            <td colspan="7" style="text-align:center; padding:14px;">Sin resultados</td>
                         </tr>
                     </tbody>
                 </ng-template>
             </table>
         </div>
-
     </section>
 </main>

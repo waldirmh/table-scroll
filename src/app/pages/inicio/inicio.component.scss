@@ -20,6 +20,7 @@ body {
 .main {
   padding: 25px 10px 25px 10px;
   background: var(--card);
+  height: 100vh;
 
 }
 
@@ -35,7 +36,29 @@ body {
 }
 
 h3 {
+  margin: 3px;
+  padding: 0px;
+}
+
+.content-title {
+  display: flex;
+  gap: 10px;
+}
+
+.result-info {
   color: var(--text);
+  margin: 0px;
+  padding: 0px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-quantity {
+  justify-self: end;
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .tabla-wrapper>h3 {
@@ -119,20 +142,18 @@ h3 {
   background: var(--seconday);
 }
 
-.result-info {
-  justify-self: end;
-  font-size: 12px;
-  color: var(--muted);
-  padding: 0 6px;
-}
+
 
 /* ===========
    Tabla (scroll solo aquí)
    =========== */
 .table-scroll {
+  max-height: 75vh;
+  /* altura visible para que exista scroll vertical */
+  overflow-y: auto;
+  /* ← habilita scroll vertical */
   overflow-x: auto;
-  /* ← únicamente la tabla */
-  overflow-y: visible;
+  /* ← mantiene el scroll horizontal de la tabla */
   border-radius: 10px;
   border: 1px solid var(--line);
 }
@@ -274,10 +295,10 @@ button:focus,
     grid-template-columns: 1fr;
   }
 
-  .result-info {
-    font-size: 11px;
-    opacity: .9;
-  }
+  // .result-info {
+  //   font-size: 11px;
+  //   opacity: .9;
+  // }
 
   .tabla {
     min-width: 640px;
