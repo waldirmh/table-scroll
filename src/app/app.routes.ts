@@ -5,5 +5,5 @@ import { CartaComponent } from './pages/carta/carta.component';
 
 export const routes: Routes = [
   { path: '', component: InicioComponent },
-  { path: 'carta', component: CartaComponent },
+  // { path: 'carta', component: CartaComponent },
 ];

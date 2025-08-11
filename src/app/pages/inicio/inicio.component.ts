@@ -77,9 +77,9 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.products = this.allProducts.filter(p => {
       const matchText = !qNorm || p.code.toLowerCase().includes(qNorm) || p.name.toLowerCase().includes(qNorm);
       const matchCat = !category || p.category === category;
-      const matchOffer = !offer || (offer === 'yes' && p.inOffer) || (offer === 'no' && !p.inOffer);
-      const matchMin = min === null || p.price >= min;
-      const matchMax = max === null || p.price <= max;
+      const matchOffer = !offer || (offer === 'yes' && p.active) || (offer === 'no' && !p.active);
+      const matchMin = min === null || p.finalPrice >= min;
+      const matchMax = max === null || p.finalPrice <= max;
       return matchText && matchCat && matchOffer && matchMin && matchMax;
     });
   }
