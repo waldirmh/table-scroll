@@ -19,7 +19,6 @@ import { data } from '../../../data/data';
   styleUrls: ['./inicio.component.scss']
 })
 export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
-  // Datos (INICIALIZADOS para evitar TS2564)
   products: Product[] = [];
   allProducts: Product[] = [];
   visibleProducts: Product[] = [];
@@ -34,7 +33,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   skeletonRows = Array.from({ length: 20 });
   constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) _platformId: Object) {
     this.filtersForm = this.fb.group({
-      q: [''],
+      query: [''],
       category: [''],
       offer: [''],
       minPrice: [''],
@@ -61,7 +60,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   resetFilters(): void {
     this.filtersForm.reset({
-      q: '',
+      query: '',
       category: '',
       offer: '',
       minPrice: '',
@@ -70,8 +69,8 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFilters(): void {
-    const { q, category, offer, minPrice, maxPrice } = this.filtersForm.value;
-    const qNorm = (q ?? '').toString().trim().toLowerCase();
+    const { query, category, offer, minPrice, maxPrice } = this.filtersForm.value;
+    const qNorm = (query ?? '').toString().trim().toLowerCase();
     const min = minPrice !== null && minPrice !== '' ? Number(minPrice) : null;
     const max = maxPrice !== null && maxPrice !== '' ? Number(maxPrice) : null;
 

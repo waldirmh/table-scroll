@@ -6,8 +6,8 @@
         <form class="filters" *ngIf="filtersForm" [formGroup]="filtersForm" role="search"
             aria-label="Filtros de productos">
             <div class="search-field">
-                <input type="search" placeholder="Buscar por código o nombre…" formControlName="q" autocomplete="off"
-                    aria-label="Buscar" />
+                <input type="search" placeholder="Buscar por código o nombre…" formControlName="query"
+                    autocomplete="off" aria-label="Buscar" />
                 <!-- Lupa morada -->
                 <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
@@ -39,52 +39,56 @@
             </div>
         </form>
 
-        <table class="tabla">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Categoría</th>
-                    <th class="text-right">Precio</th>
-                    <th>Oferta</th>
-                </tr>
-            </thead>
+        <div class="table-scroll">
 
-            <!-- Cuando está cargando -->
-            <ng-container *ngIf="isLoading; else dataTbody">
-                <tbody>
-                    <tr class="skeleton-row" *ngFor="let _ of skeletonRows">
-                        <td><span class="sk sk--sm"></span></td>
-                        <td><span class="sk sk--md"></span></td>
-                        <td><span class="sk sk--md"></span></td>
-                        <td class="text-right"><span class="sk sk--sm"></span></td>
-                        <td><span class="sk sk--pill"></span></td>
+            <table class="tabla">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th class="text-right">Precio</th>
+                        <th>Oferta</th>
                     </tr>
-                </tbody>
-            </ng-container>
+                </thead>
 
-            <!-- Cuando ya hay datos -->
-            <ng-template #dataTbody>
-                <tbody>
-                    <tr *ngFor="let product of products">
-                        <td>{{ product.code }}</td>
-                        <td>{{ product.name }}</td>
-                        <td>{{ product.category }}</td>
-                        <td class="text-right">{{ product.price | currency:'PEN':'symbol-narrow' }}</td>
-                        <td>
-                            <span class="badge" [class.badge-ok]="product.inOffer" [class.badge-no]="!product.inOffer">
-                                {{ product.inOffer ? 'Sí' : 'No' }}
-                            </span>
-                        </td>
-                    </tr>
+                <!-- Cuando está cargando -->
+                <ng-container *ngIf="isLoading; else dataTbody">
+                    <tbody>
+                        <tr class="skeleton-row" *ngFor="let _ of skeletonRows">
+                            <td><span class="sk sk--sm"></span></td>
+                            <td><span class="sk sk--md"></span></td>
+                            <td><span class="sk sk--md"></span></td>
+                            <td class="text-right"><span class="sk sk--sm"></span></td>
+                            <td><span class="sk sk--pill"></span></td>
+                        </tr>
+                    </tbody>
+                </ng-container>
 
-                    <!-- Estado vacío (opcional) -->
-                    <tr *ngIf="!isLoading && visibleProducts.length === 0">
-                        <td colspan="5" style="text-align:center; padding:14px;">Sin resultados</td>
-                    </tr>
-                </tbody>
-            </ng-template>
-        </table>
+                <!-- Cuando ya hay datos -->
+                <ng-template #dataTbody>
+                    <tbody>
+                        <tr *ngFor="let product of products">
+                            <td>{{ product.code }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.category }}</td>
+                            <td class="text-right">{{ product.price | currency:'PEN':'symbol-narrow' }}</td>
+                            <td>
+                                <span class="badge" [class.badge-ok]="product.inOffer"
+                                    [class.badge-no]="!product.inOffer">
+                                    {{ product.inOffer ? 'Sí' : 'No' }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        <!-- Estado vacío (opcional) -->
+                        <tr *ngIf="!isLoading && visibleProducts.length === 0">
+                            <td colspan="5" style="text-align:center; padding:14px;">Sin resultados</td>
+                        </tr>
+                    </tbody>
+                </ng-template>
+            </table>
+        </div>
 
     </section>
 </main>
