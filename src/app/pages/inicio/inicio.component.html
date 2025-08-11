@@ -47,7 +47,7 @@
                         <th>Código</th>
                         <th>Nombre</th>
                         <th>Categoría</th>
-                        <th class="text-right">Precio</th>
+                        <th class="text-left">Precio</th>
                         <th>Oferta</th>
                     </tr>
                 </thead>
@@ -72,7 +72,7 @@
                             <td>{{ product.code }}</td>
                             <td>{{ product.name }}</td>
                             <td>{{ product.category }}</td>
-                            <td class="text-right">{{ product.price | currency:'PEN':'symbol-narrow' }}</td>
+                            <td class="text-left">{{ product.price | currency:'PEN':'symbol-narrow' }}</td>
                             <td>
                                 <span class="badge" [class.badge-ok]="product.inOffer"
                                     [class.badge-no]="!product.inOffer">
