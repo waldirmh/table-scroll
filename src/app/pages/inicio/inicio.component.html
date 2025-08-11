@@ -1,16 +1,13 @@
 <main class="main">
     <section class="tabla-wrapper">
         <h3>Productos</h3>
-
         <!-- Filtros -->
         <form class="filters" [formGroup]="filtersForm">
             <input type="search" placeholder="Buscar por código o nombre…" formControlName="q" autocomplete="off" />
-
             <select formControlName="category">
                 <option value="">Todas las categorías</option>
                 <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
             </select>
-
             <select formControlName="offer">
                 <option value="">Todas</option>
                 <option value="yes">En oferta</option>
@@ -25,7 +22,7 @@
             </button>
 
             <div class="result-info">
-                {{ products.length }} de {{ allProducts.length }}
+                Productos {{ products.length }} de {{ allProducts.length }}
             </div>
         </form>
 
@@ -46,7 +43,7 @@
                     <td>{{ p.code }}</td>
                     <td>{{ p.name }}</td>
                     <td>{{ p.category }}</td>
-                    <td class="text-right">{{ p.price | currency:'PEN':'symbol-narrow' }}</td>
+                    <td class="text-right">{{ p.price | currency:'PEN ':'symbol-narrow' }}</td>
                     <td>
                         <span class="badge" [class.badge-ok]="p.inOffer" [class.badge-no]="!p.inOffer">
                             {{ p.inOffer ? 'Sí' : 'No' }}

@@ -1,4 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
+
+
+/* ======= Dark theme tokens ======= */
+:root {
+  --bg: #0b0b0b;
+  --surface: #121212;
+  --surface-2: #6311f0;
+  --icon: #f7f3f3;
+  --border: #7c3aed;
+  --border-soft: #1f1f1f;
+  --text: #e6e6e6;
+  --muted: #bdbdbd;
+  --accent: #7c3aed;
+  /* morado */
+  --accent-weak: rgba(124, 58, 237, 0.25);
+  --ok: #10b981;
+  --ok-weak: rgba(16, 185, 129, .2);
+  --no: #ef4444;
+  --no-weak: rgba(239, 68, 68, .18);
+  --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+}
+
 body {
   margin: 0px;
   padding: 0px;
