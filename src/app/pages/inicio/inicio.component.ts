@@ -1,12 +1,8 @@
-import {
-  Component, OnInit, AfterViewInit, OnDestroy,
-  ViewChild, ElementRef
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
-
 import { Product } from '../../../interface/product';
 import { data } from '../../../data/data';
 
@@ -31,7 +27,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Scroll infinito
   pageSize = 20;
-  currentPage = 0;         // 0-based
+  currentPage = 0;
   hasMorePages = true;
   private loadingMore = false;
 
@@ -61,6 +57,9 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void { }
   ngOnDestroy(): void { }
 
+  /**
+   * Limpiar filtros
+   */
   resetFilters(): void {
     this.filtersForm.reset({
       query: '',
@@ -71,6 +70,9 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  /**
+   * Aplicar filtros
+   */
   applyFilters(): void {
     const { query, category, activated, minPrice, maxPrice } = this.filtersForm.value;
     const qNorm = (query ?? '').toString().trim().toLowerCase();
@@ -85,7 +87,6 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
       const matchMax = max === null || p.finalPrice <= max;
       return matchText && matchCat && matchOffer && matchMin && matchMax;
     });
-    // reset paginación y primera página
     this.resetPagination();
     // llevar scroll al tope del contenedor
     if (this.tableScrollRef?.nativeElement) {
@@ -93,6 +94,11 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Para el scroll cuando llega a 20 y cargue los siguientes 20
+   * @param e 
+   * @returns 
+   */
   onTableScroll(e: Event) {
     const el = e.target as HTMLElement | null;
     if (!el) return;
@@ -104,23 +110,9 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // private getAllProducts(): void {
-  //   this.isLoading = true;
-  //   setTimeout(() => {
-  //     try {
-  //       const seed = data as Product[];
-  //       this.allProducts = seed;
-  //       this.products = [...seed];
-  //       this.categories = Array.from(new Set(seed.map((p: any) => p.category))).sort();
-  //       // arrancar con primera página
-  //       this.resetPagination();
-  //     } catch (error) {
-  //       console.error(error);
-  //     } finally {
-  //       this.isLoading = false;
-  //     }
-  //   }, 1000);
-  // }
+  /**
+   * Carga los productos de la data
+   */
   private getAllProducts(): void {
     this.isLoading = true;
     setTimeout(() => {
@@ -129,7 +121,6 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
         this.allProducts = seed;
         this.products = [...seed];
         this.categories = Array.from(new Set(seed.map((p: any) => p.category))).sort();
-        // primera página
         this.resetPagination();
       } catch (error) {
         console.error(error);
@@ -138,8 +129,9 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 1000);
   }
 
-
-  /** Reinicia paginación y carga la primera página */
+  /**
+   * Reinicia paginación y cargaa la primera página
+   */
   private resetPagination(): void {
     this.visibleProducts = [];
     this.currentPage = 0;
@@ -147,7 +139,10 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appendNextPage();
   }
 
-  /** Agrega la siguiente página (20 items) a visibleProducts */
+  /**
+   * Agrega la siguiente página 20 páginas a visibleProducts
+   * @returns 
+   */
   private appendNextPage(): void {
     if (this.loadingMore || !this.hasMorePages) return;
     this.isLoading = true;
