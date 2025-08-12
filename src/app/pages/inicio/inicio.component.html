@@ -6,7 +6,6 @@
                 Mostrando {{ visibleProducts.length }} de {{ products.length }} (total {{ allProducts.length }})
             </h3>
         </div>
-
         <!-- Filtros -->
         <form class="filters" *ngIf="filtersForm" [formGroup]="filtersForm" role="search"
             aria-label="Filtros de productos">
@@ -19,27 +18,21 @@
                         stroke-linecap="round" />
                 </svg>
             </div>
-
             <select formControlName="category" aria-label="Categoría">
                 <option value="">Todas las categorías</option>
                 <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
             </select>
-
             <select formControlName="activated" aria-label="Activo">
                 <option value="">Todas</option>
                 <option value="yes">Activos</option>
                 <option value="no">Inactivos</option>
             </select>
-
             <input type="number" formControlName="minPrice" placeholder="Precio min" aria-label="Precio mínimo" />
             <input type="number" formControlName="maxPrice" placeholder="Precio max" aria-label="Precio máximo" />
-
             <button type="button" class="btn-reset" (click)="resetFilters()" aria-label="Limpiar filtros">
                 Limpiar
             </button>
-
         </form>
-
         <div class="table-scroll" #tableScroll (scroll)="onTableScroll($event)">
             <table class="tabla">
                 <thead>
@@ -53,7 +46,6 @@
                         <th>Activo</th>
                     </tr>
                 </thead>
-
                 <!-- Cuando está cargando -->
                 <ng-container *ngIf="isLoading; else dataTbody">
                     <tbody>
@@ -68,7 +60,6 @@
                         </tr>
                     </tbody>
                 </ng-container>
-
                 <!-- Cuando ya hay datos -->
                 <ng-template #dataTbody>
                     <tbody>
@@ -76,8 +67,8 @@
                             <td>{{ product.code }}</td>
                             <td>{{ product.name }}</td>
                             <td>{{ product.category }}</td>
-                            <td class="text-left">{{ product.basePrice | currency:'PEN':'symbol' }}</td>
-                            <td class="text-left">{{ product.finalPrice | currency:'PEN':'symbol' }}</td>
+                            <td class="text-left">{{ product.basePrice | currency:'PEN ':'symbol' }}</td>
+                            <td class="text-left">{{ product.finalPrice | currency:'PEN ':'symbol' }}</td>
                             <td class="text-left">{{ product.quantity }}</td>
                             <td>
                                 <span class="badge" [class.badge-ok]="product.active"
@@ -86,7 +77,6 @@
                                 </span>
                             </td>
                         </tr>
-
                         <!-- Estado vacío -->
                         <tr *ngIf="!isLoading && products.length === 0">
                             <td colspan="7" style="text-align:center; padding:14px;">Sin resultados</td>

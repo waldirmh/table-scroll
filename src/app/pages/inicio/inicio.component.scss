@@ -148,12 +148,9 @@ h3 {
    Tabla (scroll solo aquí)
    =========== */
 .table-scroll {
-  max-height: 75vh;
-  /* altura visible para que exista scroll vertical */
+  max-height: 80vh;
   overflow-y: auto;
-  /* ← habilita scroll vertical */
   overflow-x: auto;
-  /* ← mantiene el scroll horizontal de la tabla */
   border-radius: 10px;
   border: 1px solid var(--line);
 }
