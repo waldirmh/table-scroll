@@ -1,38 +1,39 @@
-<main class="main">
-    <section class="tabla-wrapper">
-        <div class="result-info">
-            <h3>Productos</h3>
-            <h3 class="info-quantity">
+<main class="app-layout bg-gradient-to-b from-bg to-bg-elevated">
+    <section class="app-card bg-card">
+        <!-- Header -->
+        <div class="header">
+            <h3 class="header-title">Productos</h3>
+            <span class="header-badge">
                 Mostrando {{ visibleProducts.length }} de {{ products.length }} (total {{ allProducts.length }})
-            </h3>
+            </span>
         </div>
+        
         <!-- Filtros -->
-        <form class="filters" *ngIf="filtersForm" [formGroup]="filtersForm" role="search"
-            aria-label="Filtros de productos">
+        <form class="filters" *ngIf="filtersForm" [formGroup]="filtersForm" role="search" aria-label="Filtros de productos">
             <div class="search-field">
-                <input type="search" placeholder="Buscar por código o nombre…" formControlName="query"
-                    autocomplete="off" aria-label="Buscar" />
+                <input type="search" placeholder="Buscar por código o nombre…" formControlName="query" autocomplete="off" aria-label="Buscar" class="search-input" />
                 <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
-                    <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" />
+                    <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                 </svg>
             </div>
-            <select formControlName="category" aria-label="Categoría">
+            <select formControlName="category" aria-label="Categoría" class="filter-input">
                 <option value="">Todas las categorías</option>
                 <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
             </select>
-            <select formControlName="activated" aria-label="Activo">
+            <select formControlName="activated" aria-label="Activo" class="filter-input">
                 <option value="">Todas</option>
                 <option value="yes">Activos</option>
                 <option value="no">Inactivos</option>
             </select>
-            <input type="number" formControlName="minPrice" placeholder="Precio min" aria-label="Precio mínimo" />
-            <input type="number" formControlName="maxPrice" placeholder="Precio max" aria-label="Precio máximo" />
+            <input type="number" formControlName="minPrice" placeholder="Precio min" aria-label="Precio mínimo" class="filter-input" />
+            <input type="number" formControlName="maxPrice" placeholder="Precio max" aria-label="Precio máximo" class="filter-input" />
             <button type="button" class="btn-reset" (click)="resetFilters()" aria-label="Limpiar filtros">
                 Limpiar
             </button>
         </form>
+        
+        <!-- Tabla -->
         <div class="table-scroll" #tableScroll (scroll)="onTableScroll($event)">
             <table class="tabla">
                 <thead>
@@ -40,50 +41,63 @@
                         <th>Código</th>
                         <th>Nombre</th>
                         <th>Categoría</th>
-                        <th class="text-left">Precio Base</th>
-                        <th class="text-left">Precio Final</th>
-                        <th class="text-left">Cantidad</th>
+                        <th>Precio Base</th>
+                        <th>Precio Final</th>
+                        <th>Cantidad</th>
                         <th>Activo</th>
                     </tr>
                 </thead>
-                <!-- Cuando está cargando -->
-                <ng-container *ngIf="isLoading; else dataTbody">
-                    <tbody>
+                <tbody>
+                    <!-- Skeleton rows cuando está cargando -->
+                    <ng-container *ngIf="isLoading">
                         <tr class="skeleton-row" *ngFor="let _ of skeletonRows">
-                            <td><span class="sk sk--sm"></span></td>
-                            <td><span class="sk sk--md"></span></td>
-                            <td><span class="sk sk--md"></span></td>
-                            <td class="text-left"><span class="sk sk--sm"></span></td>
-                            <td class="text-left"><span class="sk sk--sm"></span></td>
-                            <td class="text-left"><span class="sk sk--sm"></span></td>
-                            <td><span class="sk sk--pill"></span></td>
+                            <td><span class="sk sk--code"></span></td>
+                            <td><span class="sk sk--name"></span></td>
+                            <td><span class="sk sk--category"></span></td>
+                            <td><span class="sk sk--price"></span></td>
+                            <td><span class="sk sk--price"></span></td>
+                            <td><span class="sk sk--qty"></span></td>
+                            <td><span class="sk sk--badge"></span></td>
                         </tr>
-                    </tbody>
-                </ng-container>
-                <!-- Cuando ya hay datos -->
-                <ng-template #dataTbody>
-                    <tbody>
+                    </ng-container>
+                    <!-- Datos cuando ya hay -->
+                    <ng-container *ngIf="!isLoading">
                         <tr *ngFor="let product of visibleProducts">
                             <td>{{ product.code }}</td>
                             <td>{{ product.name }}</td>
                             <td>{{ product.category }}</td>
-                            <td class="text-left">{{ product.basePrice | currency:'PEN ':'symbol' }}</td>
-                            <td class="text-left">{{ product.finalPrice | currency:'PEN ':'symbol' }}</td>
-                            <td class="text-left">{{ product.quantity }}</td>
+                            <td>{{ product.basePrice | currency:'PEN ':'symbol' }}</td>
+                            <td>{{ product.finalPrice | currency:'PEN ':'symbol' }}</td>
+                            <td>{{ product.quantity }}</td>
                             <td>
-                                <span class="badge" [class.badge-ok]="product.active"
-                                    [class.badge-no]="!product.active">
+                                <span class="badge" [class.badge-ok]="product.active" [class.badge-no]="!product.active">
                                     {{ product.active ? 'Activo' : 'Inactivo' }}
                                 </span>
                             </td>
                         </tr>
                         <!-- Estado vacío -->
-                        <tr *ngIf="!isLoading && products.length === 0">
-                            <td colspan="7" style="text-align:center; padding:14px;">Sin resultados</td>
+                        <tr *ngIf="products.length === 0">
+                            <td colspan="7" class="empty-state">
+                                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M20 13V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V13M20 13V10C20 9.44772 19.5523 9 19 9H5C4.44772 9 4 9.44772 4 10V13M20 13H4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M9 5H15M12 2V8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <p class="empty-title">Sin resultados</p>
+                                <span class="empty-text">No se encontraron productos con los filtros aplicados</span>
+                            </td>
                         </tr>
-                    </tbody>
-                </ng-template>
+                    </ng-container>
+                </tbody>
             </table>
+            <!-- Loader overlay para carga inicial -->
+            <div class="loader-overlay" *ngIf="isLoading && visibleProducts.length === 0">
+                <div class="loader">
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                    <p class="loader-text">Cargando productos...</p>
+                </div>
+            </div>
         </div>
     </section>
 </main>
