@@ -18,7 +18,6 @@ export class AppComponent {
       const saved = localStorage.getItem('theme');
       if (saved === 'light') {
         this.isDarkMode = false;
-        document.body.classList.add('light-mode');
       }
     }
   }
@@ -27,10 +26,10 @@ export class AppComponent {
     this.isDarkMode = !this.isDarkMode;
     if (isPlatformBrowser(this.platformId)) {
       if (this.isDarkMode) {
-        document.body.classList.remove('light-mode');
+        document.documentElement.classList.remove('light-mode');
         localStorage.setItem('theme', 'dark');
       } else {
-        document.body.classList.add('light-mode');
+        document.documentElement.classList.add('light-mode');
         localStorage.setItem('theme', 'light');
       }
     }
