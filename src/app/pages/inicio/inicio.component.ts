@@ -14,18 +14,15 @@ import { data } from '../../../data/data';
   styleUrls: ['./inicio.component.scss']
 })
 export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
-  products: Product[] = [];        // filtrados
-  allProducts: Product[] = [];     // fuente
-  visibleProducts: Product[] = []; // los que se pintan (paginados)
+  products: Product[] = [];
+  allProducts: Product[] = [];
+  visibleProducts: Product[] = [];
 
-  // Filtros
   categories: string[] = [];
   filtersForm!: FormGroup;
 
-  // UI / carga
   isLoading = false;
 
-  // Scroll infinito
   pageSize = 20;
   currentPage = 0;
   hasMorePages = true;
@@ -33,7 +30,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   skeletonRows = Array.from({ length: 20 });
 
-  @ViewChild('tableScroll') tableScrollRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('tableBody') tableBodyRef?: ElementRef<HTMLTableSectionElement>;
 
   constructor(private fb: FormBuilder) {
     this.filtersForm = this.fb.group({
@@ -54,12 +51,32 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getAllProducts();
   }
 
-  ngAfterViewInit(): void { }
-  ngOnDestroy(): void { }
+  ngAfterViewInit(): void {
+    const tbody = this.tableBodyRef?.nativeElement;
+    if (tbody) {
+      tbody.addEventListener('scroll', () => this.onTableBodyScroll());
+    }
+  }
 
-  /**
-   * Limpiar filtros
-   */
+  ngOnDestroy(): void {
+    const tbody = this.tableBodyRef?.nativeElement;
+    if (tbody) {
+      tbody.removeEventListener('scroll', () => this.onTableBodyScroll());
+    }
+  }
+
+  onTableBodyScroll(): void {
+    const tbody = this.tableBodyRef?.nativeElement;
+    if (!tbody) return;
+
+    const threshold = 50;
+    const nearBottom = (tbody.scrollHeight - tbody.scrollTop - tbody.clientHeight) <= threshold;
+
+    if (nearBottom && this.hasMorePages && !this.isLoading && !this.loadingMore) {
+      this.appendNextPage();
+    }
+  }
+
   resetFilters(): void {
     this.filtersForm.reset({
       query: '',
@@ -70,9 +87,6 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  /**
-   * Aplicar filtros
-   */
   applyFilters(): void {
     const { query, category, activated, minPrice, maxPrice } = this.filtersForm.value;
     const qNorm = (query ?? '').toString().trim().toLowerCase();
@@ -88,31 +102,12 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
       return matchText && matchCat && matchOffer && matchMin && matchMax;
     });
     this.resetPagination();
-    // llevar scroll al tope del contenedor
-    if (this.tableScrollRef?.nativeElement) {
-      this.tableScrollRef.nativeElement.scrollTop = 0;
+    const tbody = this.tableBodyRef?.nativeElement;
+    if (tbody) {
+      tbody.scrollTop = 0;
     }
   }
 
-  /**
-   * Para el scroll cuando llega a 20 y cargue los siguientes 20
-   * @param e 
-   * @returns 
-   */
-  onTableScroll(e: Event) {
-    const el = e.target as HTMLElement | null;
-    if (!el) return;
-    const threshold = 50;
-    const nearBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) <= threshold;
-
-    if (nearBottom && this.hasMorePages && !this.isLoading && !this.loadingMore) {
-      this.appendNextPage();
-    }
-  }
-
-  /**
-   * Carga los productos de la data
-   */
   private getAllProducts(): void {
     this.isLoading = true;
     setTimeout(() => {
@@ -129,9 +124,6 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 1000);
   }
 
-  /**
-   * Reinicia paginación y cargaa la primera página
-   */
   private resetPagination(): void {
     this.visibleProducts = [];
     this.currentPage = 0;
@@ -139,14 +131,9 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appendNextPage();
   }
 
-  /**
-   * Agrega la siguiente página 20 páginas a visibleProducts
-   * @returns 
-   */
   private appendNextPage(): void {
     if (this.loadingMore || !this.hasMorePages) return;
     this.isLoading = true;
-    // Simula latencia de API (4s)
     setTimeout(() => {
       const start = this.currentPage * this.pageSize;
       const end = start + this.pageSize;

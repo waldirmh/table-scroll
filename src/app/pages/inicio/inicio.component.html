@@ -34,20 +34,21 @@
         </form>
         
         <!-- Tabla -->
-        <div class="table-scroll" #tableScroll (scroll)="onTableScroll($event)">
-            <table class="tabla">
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Nombre</th>
-                        <th>Categoría</th>
-                        <th>Precio Base</th>
-                        <th>Precio Final</th>
-                        <th>Cantidad</th>
-                        <th>Activo</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <div class="table-scroll">
+            <div class="tabla-wrapper">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio Base</th>
+                            <th>Precio Final</th>
+                            <th>Cantidad</th>
+                            <th>Activo</th>
+                        </tr>
+                    </thead>
+                    <tbody #tableBody>
                     <!-- Skeleton rows cuando está cargando -->
                     <ng-container *ngIf="isLoading">
                         <tr class="skeleton-row" *ngFor="let _ of skeletonRows">
@@ -89,6 +90,7 @@
                     </ng-container>
                 </tbody>
             </table>
+            </div>
             <!-- Loader overlay para carga inicial -->
             <div class="loader-overlay" *ngIf="isLoading && visibleProducts.length === 0">
                 <div class="loader">

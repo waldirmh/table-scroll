@@ -6,14 +6,14 @@
    Variables & base
    =========== */
 :root {
-  /* Core colors */
+  /* Core colors - Dark (default) */
   --bg: #0b0d12;
   --bg-elevated: #11151c;
   --bg-hover: #1a1f2e;
   --bg-active: #232a3b;
   
   /* Primary palette */
-  --primary: #6444f7;
+  --primary: #5e1adb;
   --primary-light: #7c5cff;
   --primary-dark: #5235d4;
   --primary-glow: rgba(100, 68, 247, 0.15);
@@ -89,6 +89,66 @@
   --font-mono: ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
 }
 
+/* Light mode */
+.light-mode {
+  --bg: #f8fafc;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-active: #e2e8f0;
+  
+  --primary: #6444f7;
+  --primary-light: #7c5cff;
+  --primary-dark: #5235d4;
+  --primary-glow: rgba(100, 68, 247, 0.10);
+  
+  --secondary: #8b5cf6;
+  --secondary-light: #a78bfa;
+  --secondary-dark: #7c3aed;
+  
+  --accent: #06b6d4;
+  --accent-light: #22d3ee;
+  --accent-dark: #0891b2;
+  
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --text-inverse: #f8fafc;
+  
+  --success: #22c55e;
+  --success-light: #16a34a;
+  --success-bg: rgba(34, 197, 94, 0.10);
+  --success-border: rgba(34, 197, 94, 0.20);
+  
+  --error: #ef4444;
+  --error-light: #dc2626;
+  --error-bg: rgba(239, 68, 68, 0.08);
+  --error-border: rgba(239, 68, 68, 0.20);
+  
+  --warning: #f59e0b;
+  --warning-light: #d97706;
+  --warning-bg: rgba(245, 158, 11, 0.10);
+  --warning-border: rgba(245, 158, 11, 0.20);
+  
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --line: #e2e8f0;
+  --line-light: #cbd5e1;
+  
+  --table-bg: #ffffff;
+  --table-header-bg: #f8fafc;
+  --table-row-hover: #e0e7ff;
+  --table-stripe: rgba(0, 0, 0, 0.02);
+  
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-focus-glow: rgba(100, 68, 247, 0.10);
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --glow: 0 0 20px rgba(100, 68, 247, 0.15);
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -100,6 +160,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
   height: 100vh;
+  transition: background var(--transition), color var(--transition);
 }
 
 * {
