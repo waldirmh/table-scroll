@@ -1,6 +1,6 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, HostListener, Inject, PLATFORM_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { Product } from '../../../interface/product';
@@ -24,6 +24,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading = false;
   showAdvancedFilters = false;
   categoryDropdownOpen = false;
+  isDarkMode = true;
 
   pageSize = 20;
   currentPage = 0;
@@ -35,7 +36,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tableBody') tableBodyRef?: ElementRef<HTMLTableSectionElement>;
   @ViewChild('categoryDropdown') categoryDropdownRef?: ElementRef<HTMLDivElement>;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) private platformId: Object) {
     this.filtersForm = this.fb.group({
       query: [''],
       category: [''],
@@ -43,6 +44,13 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
       minPrice: [''],
       maxPrice: ['']
     });
+
+    if (isPlatformBrowser(this.platformId)) {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') {
+        this.isDarkMode = false;
+      }
+    }
   }
 
   ngOnInit(): void {
@@ -94,6 +102,19 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   toggleCategoryDropdown(): void {
     this.categoryDropdownOpen = !this.categoryDropdownOpen;
+  }
+
+  toggleTheme(): void {
+    this.isDarkMode = !this.isDarkMode;
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.isDarkMode) {
+        document.documentElement.classList.remove('light-mode');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.add('light-mode');
+        localStorage.setItem('theme', 'light');
+      }
+    }
   }
 
   selectCategory(category: string): void {
