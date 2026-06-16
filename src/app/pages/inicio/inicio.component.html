@@ -1,164 +1,192 @@
 <main class="app-layout">
-    <section class="app-card">
-        <!-- Header -->
-        <div class="header">
-            <h3 class="header-title text-primary">Productos</h3>
-            <span class="header-badge bg-bg-elevated text-text-muted border border-line">
-                Mostrando {{ visibleProducts.length }} de {{ products.length }} (total {{ allProducts.length }})
-            </span>
-        </div>
-        
-        <!-- Filtros -->
-        <form class="filters border border-line" *ngIf="filtersForm" [formGroup]="filtersForm" role="search" aria-label="Filtros de productos">
-            <div class="search-field">
-                <input type="search" placeholder="Buscar por código o nombre…" formControlName="query" autocomplete="off" aria-label="Buscar" class="search-input text-text bg-input-bg border border-line placeholder:text-text-dim" />
-                <svg class="search-icon text-text-muted" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
-                    <line x1="16.65" y="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                </svg>
-            </div>
-            <select formControlName="category" aria-label="Categoría" class="filter-input text-text bg-input-bg border border-line">
-                <option value="">Todas las categorías</option>
-                <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
-            </select>
-            <select formControlName="activated" aria-label="Activo" class="filter-input text-text bg-input-bg border border-line">
-                <option value="">Todas</option>
-                <option value="yes">Activos</option>
-                <option value="no">Inactivos</option>
-            </select>
-            <input type="number" formControlName="minPrice" placeholder="Precio min" aria-label="Precio mínimo" class="filter-input text-text bg-input-bg border border-line placeholder:text-text-dim" />
-            <input type="number" formControlName="maxPrice" placeholder="Precio max" aria-label="Precio máximo" class="filter-input text-text bg-input-bg border border-line placeholder:text-text-dim" />
-            <button type="button" class="btn-reset text-white bg-primary hover:bg-primary-light" (click)="resetFilters()" aria-label="Limpiar filtros">
-                Limpiar
-            </button>
-        </form>
-        
-        <!-- Tabla desktop -->
-        <div class="table-scroll border border-line bg-table-bg hidden-mobile">
-            <div class="tabla-wrapper">
-                <table class="tabla bg-table-bg">
-                    <thead>
-                        <tr>
-                            <th class="text-text-muted bg-table-header">Código</th>
-                            <th class="text-text-muted bg-table-header">Nombre</th>
-                            <th class="text-text-muted bg-table-header">Categoría</th>
-                            <th class="text-text-muted bg-table-header">Precio Base</th>
-                            <th class="text-text-muted bg-table-header">Precio Final</th>
-                            <th class="text-text-muted bg-table-header">Cantidad</th>
-                            <th class="text-text-muted bg-table-header">Activo</th>
-                        </tr>
-                    </thead>
-                    <tbody #tableBody>
-                        <ng-container *ngIf="isLoading">
-                            <tr class="skeleton-row" *ngFor="let _ of skeletonRows">
-                                <td><span class="sk sk--code bg-bg-elevated"></span></td>
-                                <td><span class="sk sk--name bg-bg-elevated"></span></td>
-                                <td><span class="sk sk--category bg-bg-elevated"></span></td>
-                                <td><span class="sk sk--price bg-bg-elevated"></span></td>
-                                <td><span class="sk sk--price bg-bg-elevated"></span></td>
-                                <td><span class="sk sk--qty bg-bg-elevated"></span></td>
-                                <td><span class="sk sk--badge bg-bg-elevated"></span></td>
-                            </tr>
-                        </ng-container>
-                        <ng-container *ngIf="!isLoading">
-                            <tr *ngFor="let product of visibleProducts" class="hover:bg-bg-hover hover:text-white even:bg-table-stripe">
-                                <td class="text-text border-b border-line">{{ product.code }}</td>
-                                <td class="text-text border-b border-line">{{ product.name }}</td>
-                                <td class="text-text border-b border-line">{{ product.category }}</td>
-                                <td class="text-text border-b border-line">{{ product.basePrice | currency:'PEN ':'symbol' }}</td>
-                                <td class="text-text border-b border-line">{{ product.finalPrice | currency:'PEN ':'symbol' }}</td>
-                                <td class="text-text border-b border-line">{{ product.quantity }}</td>
-                                <td class="text-text border-b border-line">
-                                    <span class="badge" [class.badge-ok]="product.active" [class.badge-no]="!product.active">
-                                        {{ product.active ? 'Activo' : 'Inactivo' }}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr *ngIf="products.length === 0">
-                                <td colspan="7" class="empty-state">
-                                    <svg class="empty-icon text-text-dim" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                        <path d="M20 13V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V13M20 13V10C20 9.44772 19.5523 9 19 9H5C4.44772 9 4 9.44772 4 10V13M20 13H4" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M9 5H15M12 2V8" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    <p class="empty-title text-text">Sin resultados</p>
-                                    <span class="empty-text text-text-dim">No se encontraron productos con los filtros aplicados</span>
-                                </td>
-                            </tr>
-                        </ng-container>
-                    </tbody>
-                </table>
-            </div>
-            <div class="loader-overlay" *ngIf="isLoading && visibleProducts.length === 0">
-                <div class="loader">
-                    <div class="loader-ring border-t-primary"></div>
-                    <div class="loader-ring border-r-accent"></div>
-                    <div class="loader-ring border-b-secondary"></div>
-                    <p class="loader-text text-text-muted">Cargando productos...</p>
-                </div>
-            </div>
-        </div>
+  <section class="app-card">
+    <!-- Header -->
+    <header class="app-header">
+      <h3 class="app-title">Productos</h3>
+      <span class="app-badge">
+        Mostrando {{ visibleProducts.length }} de {{ products.length }} (total {{ allProducts.length }})
+      </span>
+    </header>
 
-        <!-- Cards mobile -->
-        <div class="mobile-cards border border-line bg-table-bg hidden-desktop">
+    <!-- Filtros -->
+    <form class="app-filters" *ngIf="filtersForm" [formGroup]="filtersForm" role="search" aria-label="Filtros de productos">
+      <!-- Buscador -->
+      <div class="search-field">
+        <input type="search" placeholder="Buscar por código o nombre…" formControlName="query" autocomplete="off" aria-label="Buscar" class="search-input" />
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <!-- Filtro categorías (custom dropdown) -->
+      <div class="category-dropdown" #categoryDropdown>
+        <button type="button" class="category-dropdown-trigger" (click)="toggleCategoryDropdown()" [class.category-dropdown-trigger--open]="categoryDropdownOpen">
+          <span class="category-dropdown-value">{{ getSelectedCategoryLabel() }}</span>
+          <svg class="category-dropdown-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="category-dropdown-menu" [class.category-dropdown-menu--open]="categoryDropdownOpen">
+          <button type="button" class="category-dropdown-item" [class.category-dropdown-item--active]="!filtersForm.get('category')?.value" (click)="selectCategory('')">
+            Todas las categorías
+          </button>
+          <button type="button" class="category-dropdown-item" *ngFor="let c of categories" [class.category-dropdown-item--active]="filtersForm.get('category')?.value === c" (click)="selectCategory(c)">
+            {{ c }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtros avanzados (colapsables en mobile) -->
+      <div class="advanced-filters" [class.advanced-filters--open]="showAdvancedFilters">
+        <select formControlName="activated" aria-label="Activo" class="filter-select">
+          <option value="">Todas</option>
+          <option value="yes">Activos</option>
+          <option value="no">Inactivos</option>
+        </select>
+        <input type="number" formControlName="minPrice" placeholder="Precio min" aria-label="Precio mínimo" class="filter-input" />
+        <input type="number" formControlName="maxPrice" placeholder="Precio max" aria-label="Precio máximo" class="filter-input" />
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="filters-actions">
+        <button type="button" class="btn-toggle-filters" (click)="toggleAdvancedFilters()" aria-label="Mostrar más filtros">
+          <svg class="btn-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="btn-toggle-text">Más filtros</span>
+        </button>
+        <button type="button" class="btn-reset" (click)="resetFilters()" aria-label="Limpiar filtros">
+          Limpiar
+        </button>
+      </div>
+    </form>
+
+    <!-- Tabla desktop -->
+    <div class="table-container desktop-only">
+      <div class="table-scroll-area">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio Base</th>
+              <th>Precio Final</th>
+              <th>Cantidad</th>
+              <th>Activo</th>
+            </tr>
+          </thead>
+          <tbody #tableBody>
             <ng-container *ngIf="isLoading">
-                <div class="mobile-skeleton" *ngFor="let _ of skeletonRows.slice(0, 5)">
-                    <div class="sk-line bg-bg-elevated"></div>
-                    <div class="sk-line bg-bg-elevated"></div>
-                    <div class="sk-line bg-bg-elevated"></div>
-                </div>
+              <tr class="skeleton-row" *ngFor="let _ of skeletonRows">
+                <td><span class="sk sk--code"></span></td>
+                <td><span class="sk sk--name"></span></td>
+                <td><span class="sk sk--category"></span></td>
+                <td><span class="sk sk--price"></span></td>
+                <td><span class="sk sk--price"></span></td>
+                <td><span class="sk sk--qty"></span></td>
+                <td><span class="sk sk--badge"></span></td>
+              </tr>
             </ng-container>
             <ng-container *ngIf="!isLoading">
-                <div class="mobile-card" *ngFor="let product of visibleProducts">
-                    <div class="mobile-card-row">
-                        <span class="mobile-label">Código</span>
-                        <span class="mobile-value text-text">{{ product.code }}</span>
-                    </div>
-                    <div class="mobile-card-row">
-                        <span class="mobile-label">Nombre</span>
-                        <span class="mobile-value text-text">{{ product.name }}</span>
-                    </div>
-                    <div class="mobile-card-row">
-                        <span class="mobile-label">Categoría</span>
-                        <span class="mobile-value text-text">{{ product.category }}</span>
-                    </div>
-                    <div class="mobile-card-row">
-                        <span class="mobile-label">Precio Base</span>
-                        <span class="mobile-value text-text">{{ product.basePrice | currency:'PEN ':'symbol' }}</span>
-                    </div>
-                    <div class="mobile-card-row">
-                        <span class="mobile-label">Precio Final</span>
-                        <span class="mobile-value text-text font-semibold">{{ product.finalPrice | currency:'PEN ':'symbol' }}</span>
-                    </div>
-                    <div class="mobile-card-row">
-                        <span class="mobile-label">Cantidad</span>
-                        <span class="mobile-value text-text">{{ product.quantity }}</span>
-                    </div>
-                    <div class="mobile-card-row">
-                        <span class="mobile-label">Estado</span>
-                        <span class="mobile-value">
-                            <span class="badge" [class.badge-ok]="product.active" [class.badge-no]="!product.active">
-                                {{ product.active ? 'Activo' : 'Inactivo' }}
-                            </span>
-                        </span>
-                    </div>
-                </div>
-                <div class="mobile-empty" *ngIf="products.length === 0">
-                    <svg class="empty-icon text-text-dim" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M20 13V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V13M20 13V10C20 9.44772 19.5523 9 19 9H5C4.44772 9 4 9.44772 4 10V13M20 13H4" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M9 5H15M12 2V8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <p class="empty-title text-text">Sin resultados</p>
-                    <span class="empty-text text-text-dim">No se encontraron productos con los filtros aplicados</span>
-                </div>
+              <tr *ngFor="let product of visibleProducts">
+                <td>{{ product.code }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.basePrice | currency:'PEN ':'symbol' }}</td>
+                <td>{{ product.finalPrice | currency:'PEN ':'symbol' }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>
+                  <span class="badge" [class.badge-ok]="product.active" [class.badge-no]="!product.active">
+                    {{ product.active ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="products.length === 0">
+                <td colspan="7" class="empty-state">
+                  <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 13V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V13M20 13V10C20 9.44772 19.5523 9 19 9H5C4.44772 9 4 9.44772 4 10V13M20 13H4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 5H15M12 2V8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <p class="empty-title">Sin resultados</p>
+                  <span class="empty-text">No se encontraron productos con los filtros aplicados</span>
+                </td>
+              </tr>
             </ng-container>
-            <div class="loader-overlay" *ngIf="isLoading && visibleProducts.length === 0">
-                <div class="loader">
-                    <div class="loader-ring border-t-primary"></div>
-                    <div class="loader-ring border-r-accent"></div>
-                    <div class="loader-ring border-b-secondary"></div>
-                    <p class="loader-text text-text-muted">Cargando productos...</p>
-                </div>
-            </div>
+          </tbody>
+        </table>
+      </div>
+      <div class="loader-overlay" *ngIf="isLoading && visibleProducts.length === 0">
+        <div class="loader">
+          <div class="loader-ring ring-1"></div>
+          <div class="loader-ring ring-2"></div>
+          <div class="loader-ring ring-3"></div>
+          <p class="loader-text">Cargando productos...</p>
         </div>
-    </section>
+      </div>
+    </div>
+
+    <!-- Cards mobile/tablet -->
+    <div class="mobile-cards mobile-only">
+      <ng-container *ngIf="isLoading">
+        <div class="mobile-skeleton" *ngFor="let _ of skeletonRows.slice(0, 5)">
+          <div class="sk-line sk-line--primary"></div>
+          <div class="sk-line sk-line--primary"></div>
+          <div class="sk-line sk-line--primary"></div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!isLoading">
+        <div class="mobile-card" *ngFor="let product of visibleProducts">
+          <div class="mobile-card-row">
+            <span class="mobile-label">Código</span>
+            <span class="mobile-value">{{ product.code }}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-label">Nombre</span>
+            <span class="mobile-value">{{ product.name }}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-label">Categoría</span>
+            <span class="mobile-value">{{ product.category }}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-label">Precio Base</span>
+            <span class="mobile-value">{{ product.basePrice | currency:'PEN ':'symbol' }}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-label">Precio Final</span>
+            <span class="mobile-value mobile-value--highlight">{{ product.finalPrice | currency:'PEN ':'symbol' }}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-label">Cantidad</span>
+            <span class="mobile-value">{{ product.quantity }}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-label">Estado</span>
+            <span class="mobile-value">
+              <span class="badge" [class.badge-ok]="product.active" [class.badge-no]="!product.active">
+                {{ product.active ? 'Activo' : 'Inactivo' }}
+              </span>
+            </span>
+          </div>
+        </div>
+        <div class="mobile-empty" *ngIf="products.length === 0">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20 13V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V13M20 13V10C20 9.44772 19.5523 9 19 9H5C4.44772 9 4 9.44772 4 10V13M20 13H4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 5H15M12 2V8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p class="empty-title">Sin resultados</p>
+          <span class="empty-text">No se encontraron productos con los filtros aplicados</span>
+        </div>
+      </ng-container>
+      <div class="loader-overlay" *ngIf="isLoading && visibleProducts.length === 0">
+        <div class="loader">
+          <div class="loader-ring ring-1"></div>
+          <div class="loader-ring ring-2"></div>
+          <div class="loader-ring ring-3"></div>
+          <p class="loader-text">Cargando productos...</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>

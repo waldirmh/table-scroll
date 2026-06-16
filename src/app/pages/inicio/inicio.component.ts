@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
@@ -22,6 +22,8 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   filtersForm!: FormGroup;
 
   isLoading = false;
+  showAdvancedFilters = false;
+  categoryDropdownOpen = false;
 
   pageSize = 20;
   currentPage = 0;
@@ -31,6 +33,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   skeletonRows = Array.from({ length: 20 });
 
   @ViewChild('tableBody') tableBodyRef?: ElementRef<HTMLTableSectionElement>;
+  @ViewChild('categoryDropdown') categoryDropdownRef?: ElementRef<HTMLDivElement>;
 
   constructor(private fb: FormBuilder) {
     this.filtersForm = this.fb.group({
@@ -65,6 +68,14 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (this.categoryDropdownOpen && this.categoryDropdownRef && !this.categoryDropdownRef.nativeElement.contains(target)) {
+      this.categoryDropdownOpen = false;
+    }
+  }
+
   onTableBodyScroll(): void {
     const tbody = this.tableBodyRef?.nativeElement;
     if (!tbody) return;
@@ -75,6 +86,24 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     if (nearBottom && this.hasMorePages && !this.isLoading && !this.loadingMore) {
       this.appendNextPage();
     }
+  }
+
+  toggleAdvancedFilters(): void {
+    this.showAdvancedFilters = !this.showAdvancedFilters;
+  }
+
+  toggleCategoryDropdown(): void {
+    this.categoryDropdownOpen = !this.categoryDropdownOpen;
+  }
+
+  selectCategory(category: string): void {
+    this.filtersForm.patchValue({ category });
+    this.categoryDropdownOpen = false;
+  }
+
+  getSelectedCategoryLabel(): string {
+    const val = this.filtersForm.get('category')?.value;
+    return val || 'Todas las categorías';
   }
 
   resetFilters(): void {

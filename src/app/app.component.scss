@@ -12,11 +12,16 @@
   justify-content: center;
   transition: all var(--transition);
   box-shadow: var(--shadow-sm);
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--line);
 }
 
 .theme-toggle:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow), var(--glow);
+  background: var(--bg-hover);
+  border-color: var(--primary);
 }
 
 .theme-toggle svg {
