@@ -24,6 +24,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading = false;
   showAdvancedFilters = false;
   categoryDropdownOpen = false;
+  filtersModalOpen = false;
   isDarkMode = true;
 
   pageSize = 20;
@@ -117,6 +118,21 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  toggleFiltersModal(): void {
+    this.filtersModalOpen = !this.filtersModalOpen;
+  }
+
+  closeFiltersModal(): void {
+    this.filtersModalOpen = false;
+  }
+
+  handleModalAction(): void {
+    if (this.hasActiveFilters()) {
+      this.resetFilters();
+    }
+    this.filtersModalOpen = false;
+  }
+
   selectCategory(category: string): void {
     this.filtersForm.patchValue({ category });
     this.categoryDropdownOpen = false;
@@ -125,6 +141,16 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   getSelectedCategoryLabel(): string {
     const val = this.filtersForm.get('category')?.value;
     return val || 'Todas las categorías';
+  }
+
+  hasActiveFilters(): boolean {
+    const { category, activated, minPrice, maxPrice } = this.filtersForm.value;
+    return !!(category || activated || minPrice || maxPrice);
+  }
+
+  hasAnyFilterOrSearch(): boolean {
+    const { query, category, activated, minPrice, maxPrice } = this.filtersForm.value;
+    return !!(query || category || activated || minPrice || maxPrice);
   }
 
   resetFilters(): void {

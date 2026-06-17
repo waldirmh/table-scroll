@@ -21,56 +21,78 @@
 
     <!-- Filtros -->
     <form class="app-filters" *ngIf="filtersForm" [formGroup]="filtersForm" role="search" aria-label="Filtros de productos">
-      <!-- Buscador -->
-      <div class="search-field">
-        <input type="search" placeholder="Buscar por código o nombre…" formControlName="query" autocomplete="off" aria-label="Buscar" class="search-input" />
-        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-
-      <!-- Filtro categorías (custom dropdown) -->
-      <div class="category-dropdown" #categoryDropdown>
-        <button type="button" class="category-dropdown-trigger" (click)="toggleCategoryDropdown()" [class.category-dropdown-trigger--open]="categoryDropdownOpen">
-          <span class="category-dropdown-value">{{ getSelectedCategoryLabel() }}</span>
-          <svg class="category-dropdown-arrow" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="filters-main-row">
+        <div class="search-field">
+          <input type="search" placeholder="Buscar por código o nombre…" formControlName="query" autocomplete="off" aria-label="Buscar" class="search-input" />
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-        </button>
-        <div class="category-dropdown-menu" [class.category-dropdown-menu--open]="categoryDropdownOpen">
-          <button type="button" class="category-dropdown-item" [class.category-dropdown-item--active]="!filtersForm.get('category')?.value" (click)="selectCategory('')">
-            Todas las categorías
-          </button>
-          <button type="button" class="category-dropdown-item" *ngFor="let c of categories" [class.category-dropdown-item--active]="filtersForm.get('category')?.value === c" (click)="selectCategory(c)">
-            {{ c }}
+        </div>
+        <div class="filters-actions-inline">
+          <button type="button" class="btn-filter-toggle" [class.btn-filter-toggle--active]="hasActiveFilters()" (click)="toggleFiltersModal()" aria-label="Abrir filtros">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 4h18M7 9h10M10 14h4M11 19h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
           </button>
         </div>
       </div>
-
-      <!-- Filtros avanzados (colapsables en mobile) -->
-      <div class="advanced-filters" [class.advanced-filters--open]="showAdvancedFilters">
-        <select formControlName="activated" aria-label="Activo" class="filter-select">
-          <option value="">Todas</option>
-          <option value="yes">Activos</option>
-          <option value="no">Inactivos</option>
-        </select>
-        <input type="number" formControlName="minPrice" placeholder="Precio min" aria-label="Precio mínimo" class="filter-input" />
-        <input type="number" formControlName="maxPrice" placeholder="Precio max" aria-label="Precio máximo" class="filter-input" />
-      </div>
-
-      <!-- Botones de acción -->
-      <div class="filters-actions">
-        <button type="button" class="btn-toggle-filters" (click)="toggleAdvancedFilters()" aria-label="Mostrar más filtros">
-          <svg class="btn-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span class="btn-toggle-text">Más filtros</span>
-        </button>
-        <button type="button" class="btn-reset" (click)="resetFilters()" aria-label="Limpiar filtros">
-          Limpiar
-        </button>
-      </div>
     </form>
+
+    <!-- Modal de filtros -->
+    <div class="filters-modal-backdrop" [class.filters-modal-backdrop--open]="filtersModalOpen" (click)="closeFiltersModal()">
+      <div class="filters-modal" (click)="$event.stopPropagation()">
+        <div class="filters-modal-header">
+          <h4 class="filters-modal-title">Filtros</h4>
+          <button type="button" class="filters-modal-close" (click)="closeFiltersModal()" aria-label="Cerrar filtros">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="filters-modal-body" [formGroup]="filtersForm">
+          <div class="filter-group">
+            <label class="filter-label">Categoría</label>
+            <div class="category-dropdown" #categoryDropdown>
+              <button type="button" class="category-dropdown-trigger" (click)="toggleCategoryDropdown()" [class.category-dropdown-trigger--open]="categoryDropdownOpen">
+                <span class="category-dropdown-value">{{ getSelectedCategoryLabel() }}</span>
+                <svg class="category-dropdown-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="category-dropdown-menu" [class.category-dropdown-menu--open]="categoryDropdownOpen">
+                <button type="button" class="category-dropdown-item" [class.category-dropdown-item--active]="!filtersForm.get('category')?.value" (click)="selectCategory('')">
+                  Todas las categorías
+                </button>
+                <button type="button" class="category-dropdown-item" *ngFor="let c of categories" [class.category-dropdown-item--active]="filtersForm.get('category')?.value === c" (click)="selectCategory(c)">
+                  {{ c }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Estado</label>
+            <select formControlName="activated" aria-label="Activo" class="filter-select">
+              <option value="">Todas</option>
+              <option value="yes">Activos</option>
+              <option value="no">Inactivos</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Rango de precio</label>
+            <div class="price-range">
+              <input type="number" formControlName="minPrice" placeholder="Mínimo" aria-label="Precio mínimo" class="filter-input" />
+              <span class="price-separator">—</span>
+              <input type="number" formControlName="maxPrice" placeholder="Máximo" aria-label="Precio máximo" class="filter-input" />
+            </div>
+          </div>
+        </div>
+        <div class="filters-modal-footer">
+          <button type="button" class="btn-reset-full" [class.btn-reset-full--danger]="hasActiveFilters()" (click)="handleModalAction()">
+            {{ hasActiveFilters() ? 'Limpiar filtros' : 'Aplicar filtros' }}
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Tabla desktop -->
     <div class="table-container desktop-only">
