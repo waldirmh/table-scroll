@@ -122,17 +122,6 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private hasPendingChanges(): boolean {
-    const current = this.filtersForm.value;
-    return (
-      current.query !== this.appliedFilters.query ||
-      current.category !== this.appliedFilters.category ||
-      current.activated !== this.appliedFilters.activated ||
-      String(current.minPrice ?? '') !== String(this.appliedFilters.minPrice ?? '') ||
-      String(current.maxPrice ?? '') !== String(this.appliedFilters.maxPrice ?? '')
-    );
-  }
-
   hasAppliedAdvancedFilters(): boolean {
     const { category, activated, minPrice, maxPrice } = this.appliedFilters;
     return !!(category || activated || minPrice || maxPrice);
@@ -187,12 +176,8 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filtersModalOpen = false;
   }
 
-  handleModalAction(): void {
-    if (this.hasAppliedAdvancedFilters()) {
-      this.resetFilters();
-    } else if (this.hasPendingChanges()) {
-      this.applyFilters();
-    }
+  applyFiltersAndClose(): void {
+    this.applyFilters();
     this.filtersModalOpen = false;
   }
 
@@ -216,13 +201,6 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     return !!(query || category || activated || minPrice || maxPrice);
   }
 
-  getModalButtonText(): string {
-    if (this.hasAppliedAdvancedFilters()) {
-      return 'Limpiar filtros';
-    }
-    return this.hasPendingChanges() ? 'Aplicar filtros' : 'Cerrar';
-  }
-
   resetFilters(): void {
     this.filtersForm.reset({
       query: this.appliedFilters.query,
@@ -236,6 +214,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appliedFilters.minPrice = '';
     this.appliedFilters.maxPrice = '';
     this.executeFiltering();
+    this.filtersModalOpen = false;
   }
 
   applyFilters(): void {
