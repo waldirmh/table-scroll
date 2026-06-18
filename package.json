@@ -1,5 +1,5 @@
 {
-  "name": "my-love",
+  "name": "products-table",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -8,7 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:my-love": "node dist/my-love/server/server.mjs"
+    "serve:ssr:products-table": "node dist/products-table/server/server.mjs"
   },
   "private": true,
   "dependencies": {

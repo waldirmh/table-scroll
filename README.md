@@ -44,7 +44,7 @@ La aplicación se abre en `http://localhost:4200`.
 | `npm run build` | Compila para producción |
 | `npm run watch` | Compilación en modo watch |
 | `npm run test` | Ejecuta las pruebas unitarias |
-| `npm run serve:ssr:my-love` | Inicia el servidor SSR |
+| `npm run serve:ssr:products-table` | Inicia el servidor SSR |
 
 ## Autor
 
