@@ -1,36 +1,51 @@
-# Requirements
+# Products Table
 
-- NodeJS: Versión 22.x
-- Run App: ng serve -o
+Aplicación web para gestión y visualización de productos con tabla virtualizada, filtros avanzados y tema claro/oscuro.
 
-## Table with skeleton loader
+## Stack
 
-App web usando skeleton para la carga de productos
+- **Angular** 18.2 (standalone components, SSR)
+- **Tailwind CSS** 3.4 + SCSS con variables CSS
+- **Reactive Forms** con filtrado reactivo
 
-## Name
+## Características
 
-App Web de gestión de productos
+- **Virtualización incremental**: carga de 20 en 20 registros al hacer scroll
+- **Skeleton loader** animado durante la carga inicial
+- **Búsqueda en tiempo real** por código o nombre (debounce 300ms)
+- **Filtros avanzados** en modal: categoría, estado, rango de precio
+- **Tema claro/oscuro** con persistencia en `localStorage`
+- **Diseño responsive**: tabla en desktop, cards en mobile/tablet
 
-## Description
-La App web lista de 10 en 10 a medida que el usuario baje para la parte inferior para ves más productos.
-- Realiza búsqueda por id
-- Permite filtrar productos por categoría, precio, oferta.
+## Requisitos
 
+- Node.js 22.x
+- npm
 
-## Installation
-- Dependencias: npm run install
+## Instalación
 
-## Usage
-- Angular versión 17.x
+```bash
+npm install
+```
 
-## Support 
+## Desarrollo
 
-waldirmendozahuaman887@gmail.com
+```bash
+npm run dev
+```
 
-## Author
+La aplicación se abre en `http://localhost:4200`.
 
-Waldir Mendoza Huamán
+## Comandos
 
-## Project status
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Inicia el servidor de desarrollo |
+| `npm run build` | Compila para producción |
+| `npm run watch` | Compilación en modo watch |
+| `npm run test` | Ejecuta las pruebas unitarias |
+| `npm run serve:ssr:my-love` | Inicia el servidor SSR |
 
-Terminado
+## Autor
+
+**Waldir Mendoza Huamán** — waldirmendozahuaman887@gmail.com
