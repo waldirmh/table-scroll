@@ -87,8 +87,8 @@
           </div>
         </div>
         <div class="filters-modal-footer">
-          <button type="button" class="btn-reset-full" [class.btn-reset-full--danger]="hasActiveFilters()" (click)="handleModalAction()">
-            {{ hasActiveFilters() ? 'Limpiar filtros' : 'Aplicar filtros' }}
+          <button type="button" class="btn-reset-full" [class.btn-reset-full--danger]="hasAppliedAdvancedFilters()" (click)="handleModalAction()">
+            {{ getModalButtonText() }}
           </button>
         </div>
       </div>

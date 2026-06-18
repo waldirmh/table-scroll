@@ -198,8 +198,8 @@
   background: rgba(0, 0, 0, 0.3);
 }
 
-::ng-deep .light-mode .filters-modal {
-  background: #fff;
+.filters-modal-backdrop--open .filters-modal {
+  transform: scale(1) translateY(0);
 }
 
 .filters-modal {
@@ -208,7 +208,7 @@
   max-height: 80vh;
   border-radius: 16px;
   background: var(--bg-elevated);
-  border: 1px solid var(--line);
+  border: 1px solid var(--primary);
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
@@ -217,8 +217,9 @@
   transition: transform var(--transition);
 }
 
-.filters-modal-backdrop--open .filters-modal {
-  transform: scale(1) translateY(0);
+::ng-deep .light-mode .filters-modal {
+  background: #fff;
+  border-color: var(--secondary);
 }
 
 .filters-modal-header {
@@ -722,7 +723,7 @@
 @media (max-width: 1024px) {
   .app-layout { padding: 12px; }
   .app-card { padding: 16px; border-radius: 14px; }
-  .app-header { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 14px; padding-right: 48px; }
+  .app-header { flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; padding-right: 48px; }
   .app-title { font-size: 22px; }
   .app-filters { margin-bottom: 12px; }
   .filters-main-row { gap: 8px; }
@@ -745,6 +746,7 @@
 @media (max-width: 640px) {
   .app-layout { padding: 8px; }
   .app-card { padding: 12px; border-radius: 12px; }
+  .app-header { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
   .app-title { font-size: 18px; }
   .app-badge { font-size: 11px; padding: 4px 10px; }
   .search-input { padding: 10px 14px 10px 40px; font-size: 13px; }

@@ -2,9 +2,18 @@ import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, Hos
 import { RouterModule } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { debounceTime } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { Product } from '../../../interface/product';
 import { data } from '../../../data/data';
+
+interface FilterValues {
+  query: string;
+  category: string;
+  activated: string;
+  minPrice: string | number;
+  maxPrice: string | number;
+}
 
 @Component({
   selector: 'app-inicio',
@@ -31,6 +40,8 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   currentPage = 0;
   hasMorePages = true;
   private loadingMore = false;
+  private destroy$ = new Subject<void>();
+  private appliedFilters: FilterValues = { query: '', category: '', activated: '', minPrice: '', maxPrice: '' };
 
   skeletonRows = Array.from({ length: 20 });
 
@@ -55,10 +66,7 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.filtersForm.valueChanges.pipe(debounceTime(400)).subscribe(() => {
-      this.applyFilters();
-    });
-
+    this.setupAutoSearch();
     this.isLoading = true;
     this.getAllProducts();
   }
@@ -75,6 +83,59 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     if (tbody) {
       tbody.removeEventListener('scroll', () => this.onTableBodyScroll());
     }
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupAutoSearch(): void {
+    this.filtersForm.get('query')!.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.appliedFilters.query = this.filtersForm.get('query')!.value;
+        this.executeFiltering();
+      });
+  }
+
+  private executeFiltering(): void {
+    const { query, category, activated, minPrice, maxPrice } = this.appliedFilters;
+    const qNorm = (query ?? '').toString().trim().toLowerCase();
+    const min = minPrice !== null && minPrice !== '' ? Number(minPrice) : null;
+    const max = maxPrice !== null && maxPrice !== '' ? Number(maxPrice) : null;
+
+    this.products = this.allProducts.filter((p: any) => {
+      const matchText = !qNorm || p.code.toLowerCase().includes(qNorm) || p.name.toLowerCase().includes(qNorm);
+      const matchCat = !category || p.category === category;
+      const matchStatus = !activated || (activated === 'yes' && p.active) || (activated === 'no' && !p.active);
+      const matchMin = min === null || p.finalPrice >= min;
+      const matchMax = max === null || p.finalPrice <= max;
+      return matchText && matchCat && matchStatus && matchMin && matchMax;
+    });
+
+    this.resetPagination();
+    const tbody = this.tableBodyRef?.nativeElement;
+    if (tbody) {
+      tbody.scrollTop = 0;
+    }
+  }
+
+  private hasPendingChanges(): boolean {
+    const current = this.filtersForm.value;
+    return (
+      current.query !== this.appliedFilters.query ||
+      current.category !== this.appliedFilters.category ||
+      current.activated !== this.appliedFilters.activated ||
+      String(current.minPrice ?? '') !== String(this.appliedFilters.minPrice ?? '') ||
+      String(current.maxPrice ?? '') !== String(this.appliedFilters.maxPrice ?? '')
+    );
+  }
+
+  hasAppliedAdvancedFilters(): boolean {
+    const { category, activated, minPrice, maxPrice } = this.appliedFilters;
+    return !!(category || activated || minPrice || maxPrice);
   }
 
   @HostListener('document:click', ['$event'])
@@ -127,8 +188,10 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleModalAction(): void {
-    if (this.hasActiveFilters()) {
+    if (this.hasAppliedAdvancedFilters()) {
       this.resetFilters();
+    } else if (this.hasPendingChanges()) {
+      this.applyFilters();
     }
     this.filtersModalOpen = false;
   }
@@ -153,35 +216,35 @@ export class InicioComponent implements OnInit, AfterViewInit, OnDestroy {
     return !!(query || category || activated || minPrice || maxPrice);
   }
 
+  getModalButtonText(): string {
+    if (this.hasAppliedAdvancedFilters()) {
+      return 'Limpiar filtros';
+    }
+    return this.hasPendingChanges() ? 'Aplicar filtros' : 'Cerrar';
+  }
+
   resetFilters(): void {
     this.filtersForm.reset({
-      query: '',
+      query: this.appliedFilters.query,
       category: '',
       activated: '',
       minPrice: '',
       maxPrice: ''
     });
+    this.appliedFilters.category = '';
+    this.appliedFilters.activated = '';
+    this.appliedFilters.minPrice = '';
+    this.appliedFilters.maxPrice = '';
+    this.executeFiltering();
   }
 
   applyFilters(): void {
-    const { query, category, activated, minPrice, maxPrice } = this.filtersForm.value;
-    const qNorm = (query ?? '').toString().trim().toLowerCase();
-    const min = minPrice !== null && minPrice !== '' ? Number(minPrice) : null;
-    const max = maxPrice !== null && maxPrice !== '' ? Number(maxPrice) : null;
-
-    this.products = this.allProducts.filter((p: any) => {
-      const matchText = !qNorm || p.code.toLowerCase().includes(qNorm) || p.name.toLowerCase().includes(qNorm);
-      const matchCat = !category || p.category === category;
-      const matchOffer = !activated || (activated === 'yes' && p.active) || (activated === 'no' && !p.active);
-      const matchMin = min === null || p.finalPrice >= min;
-      const matchMax = max === null || p.finalPrice <= max;
-      return matchText && matchCat && matchOffer && matchMin && matchMax;
-    });
-    this.resetPagination();
-    const tbody = this.tableBodyRef?.nativeElement;
-    if (tbody) {
-      tbody.scrollTop = 0;
-    }
+    const current = this.filtersForm.value;
+    this.appliedFilters.category = current.category;
+    this.appliedFilters.activated = current.activated;
+    this.appliedFilters.minPrice = current.minPrice;
+    this.appliedFilters.maxPrice = current.maxPrice;
+    this.executeFiltering();
   }
 
   private getAllProducts(): void {
